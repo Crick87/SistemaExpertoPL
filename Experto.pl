@@ -13,8 +13,9 @@ inicio:- nl,
 /* MENÚ */
 menu:-
 	validarArchivo,nl,
-	write('		1 - Iniciar el diagnostico'),nl,
-	write('		2 - Salir'),nl,
+	write('		1 - Iniciar el diagnostico EHD'),nl,
+	write('		2 - Iniciar el diagnostico EHA'),nl,
+	write('		3 - Salir'),nl,
 	write('		Respuesta: '),
 	read(Respuesta),nl,
 	validacion(Respuesta).
@@ -28,8 +29,9 @@ validarArchivo :-
     write('		Se ha definido el archivo enf.dbs'),nl.
 
 /* VALIDAR RESPUESTA DE MENÚ */
-validacion(Respuesta):-Respuesta=1, enferma, menu.
-validacion(Respuesta):-Respuesta=2, salida.
+validacion(Respuesta):-Respuesta=1, enfermaEHD, menu.
+validacion(Respuesta):-Respuesta=2, enfermaEHA, menu.
+validacion(Respuesta):-Respuesta=3, salida.
 validacion(Respuesta):-Respuesta\=1,Respuesta\=2,
 	nl,
 	write('		Opción Incorrecta'),nl,menu.
@@ -46,12 +48,12 @@ save(ToFile):-
 	tell(Old).
 
 /* CONSULTA ARCHIVO enf.dbs */
-enferma:-
+enfermaEHD:-
    consult('enf.dbs'),
    fail.
 
 /* AGREGA ENFERMEDAD */
-enferma:-
+enfermaEHD:-
 	asserta(si(end)),
 	asserta(no(end)),
 	write("		Desea introducir información? << s/n >>"),nl,
@@ -64,18 +66,52 @@ enferma:-
 	save('enf.dbs'),!,nl.
 
 /* EVALUACIÓN - ehd */
-enferma:-
+enfermaEHD:-
 	nl,nl,
 	write("		DIÁLOGO DE DIAGNÓSTICO"),nl,nl,
 	write('		¿Qué enfermedad supones? <<minúsculas>>'),nl,nl,
 	write("		Respuesta: "),
 	read(O),
-	preguntar(O),
+	preguntarEHD(O),
 	purgar.
 
 /* En el fail del predicado procesar, no se puede seguir infiriendo: */
-enferma:-
+enfermaEHD:- nl,
 	write('		No se puede concluir con los sintomas presentados.'),nl,nl,
+	write('		Escribe cualquier caracter, seguido de punto.'),
+	read(_),
+	purgar.
+
+/* CONSULTA ARCHIVO enf.dbs */
+enfermaEHA:-
+   consult('enf.dbs'),
+   fail.
+
+/* AGREGA ENFERMEDAD */
+enfermaEHA:-
+	asserta(si(end)),
+	asserta(no(end)),
+	write("		Desea introducir información? << s/n >>"),nl,
+	write("		Respuesta: "),
+	read(A),
+	A=s,
+	/* Si introducir regresa falso, ya no se desean agregar enfermedades. */
+	not(introducir),
+	/* Se guarda el archivo después de que se agrega enfermedad */
+	save('enf.dbs'),!,nl,
+	preguntarEHA([]).
+
+/* EVALUACIÓN - ehd */
+enfermaEHA:-
+	nl,nl,
+	write("		DIÁLOGO DE DIAGNÓSTICO"),nl,nl,
+	write("		Responde <s/n>"),nl,nl,
+	preguntarEHA([]),
+	purgar.
+
+/* En el fail del predicado procesar, no se puede seguir infiriendo: */
+enfermaEHA:- nl,
+	write('		No se encuentran enfermedades con los sintomas presentados.'),nl,nl,
 	write('		Escribe cualquier caracter, seguido de punto.'),
 	read(_),
 	purgar.
@@ -113,7 +149,7 @@ atributos(O,List):- asserta(enfe(O,List)).
 add(X,L,[X|L]).
 
 /* PREGUNTAR LOS SINTOMAS DE LA ENFERMEDAD CONSULTADA - ehd */
-preguntar(O):-
+preguntarEHD(O):-
 	enfe(O,A),
 	add(O,_L,_L2),
 	anterioressi(A),
@@ -123,10 +159,24 @@ preguntar(O):-
 	upcase_atom(O, UPsick),
 	write(UPtext), write(UPsick),nl,nl.
 
+preguntarEHA(L):-
+	enfe(O,A),
+	not(miembro(O,L)),
+	add(O,L,L2),
+	intentar(O,A),
+	!,nl,nl,
+	upcase_atom("		[!] Tiene los sintomas presentados de ", UPtext),
+	upcase_atom(O, UPsick),
+	write(UPtext), write(UPsick),nl,nl,
+	write("		BUSCANDO OTRA ENFERMEDAD..."),
+	read(_),
+	preguntarEHA(L2).
+
+
 /* OBTENER LOS SINTOMAS DE LA ENFERMEDAD CONSULTADA */
 anterioressi(A):- si(T),!, xanterioressi(T,A,[]),!.
 
-xanterioressi(end,_,_):-!.
+xanterioressi(end,_,_):- !.
 
 xanterioressi(T,A,L):-
 	miembro(T,A),!,
@@ -136,7 +186,7 @@ xanterioressi(T,A,L):-
 
 anterioresno(A):- no(T),!, xanterioresno(T,A,[]),!.
 
-xanterioresno(end,_,_):-!.
+xanterioresno(end,_,_):- !.
 
 xanterioresno(T,A,L):-
 	miembro(T,A),!,
