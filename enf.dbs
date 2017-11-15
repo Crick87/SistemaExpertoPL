@@ -1,5 +1,5 @@
 :- dynamic enfe/2.
 
-enfe(zica, [dolor_huesos, fiebre]).
-enfe(dengue, [dolor, fiebre]).
-
+enfe(dengue, [fiebre, dolor_de_cabeza, dolor_de_huesos, nauseas, sarpullido, diarrea, vomito]).
+enfe(zika, [fiebre, dolor_de_cabeza, dolor_de_espalda, ojos_rojos, aftas]).
+enfe(chikungunya, [manchas_rojas, dolor_de_cabeza, perdida_de_peso]).

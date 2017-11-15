@@ -104,8 +104,8 @@ enfermaEHA:-
 /* EVALUACIÓN - ehd */
 enfermaEHA:-
 	nl,nl,
-	write("		DIÁLOGO DE DIAGNÓSTICO"),nl,nl,
-	write("		Responde <s/n>"),nl,nl,
+	write("		DIÁLOGO DE DIAGNÓSTICO"),nl,
+	write("		Responde <s/n>"),nl,
 	preguntarEHA([]),
 	purgar.
 
