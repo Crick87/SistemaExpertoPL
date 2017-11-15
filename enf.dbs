@@ -1,0 +1,5 @@
+:- dynamic enfe/2.
+
+enfe(zica, [dolor_huesos, fiebre]).
+enfe(dengue, [dolor, fiebre]).
+
