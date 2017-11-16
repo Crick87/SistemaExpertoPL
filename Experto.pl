@@ -160,7 +160,8 @@ atributos(O,List):-
 atributos(O,List):- asserta(enfe(O,List)).
 
 /* SE UNE LA LISTA DE SÍNTOMAS */
-add(X,L,[X|L]).
+add(X,[],[X]).
+add(X,[C|R],[C|R1]) :- add(X,R,R1).
 
 /* PREGUNTAR LOS SINTOMAS DE LA ENFERMEDAD CONSULTADA - ehd */
 preguntarEHA(O):-
