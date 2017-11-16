@@ -157,11 +157,17 @@ atributos(O,List):-
 	atributos(O,List2).
 
 /* Se agrega la enfermedad y los síntomas a la Base de Conocimiento */
-atributos(O,List):- asserta(enfe(O,List)).
+atributos(O,List):- 
+	invertirLista(List,InverseList),
+	asserta(enfe(O,InverseList)).
+
+/* Se invierte una lista */
+invertirLista(L1,L) :- invertirLista(L1,[],L).
+invertirLista([],L,L).
+invertirLista([X|L1],L2,L3) :- invertirLista(L1,[X|L2],L3).
 
 /* SE UNE LA LISTA DE SÍNTOMAS */
-add(X,[],[X]).
-add(X,[C|R],[C|R1]) :- add(X,R,R1).
+add(X,L,[X|L]).
 
 /* PREGUNTAR LOS SINTOMAS DE LA ENFERMEDAD CONSULTADA - ehd */
 preguntarEHA(O):-

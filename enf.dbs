@@ -1,5 +1,6 @@
 :- dynamic enfe/2.
 
+enfe(enf4, [sin1, sin2, sin3, sint4]).
 enfe(enf3, [sin1, sin2, sin3]).
 enfe(enf2, [sin3, sin2]).
 enfe(enf1, [sin2, sin1]).
