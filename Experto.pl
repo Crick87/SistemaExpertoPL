@@ -13,12 +13,21 @@ inicio:- nl,
 /* MENÚ */
 menu:-
 	validarArchivo,nl,
-	write('		1 - Iniciar el diagnostico EHA'),nl,
-	write('		2 - Iniciar el diagnostico EHD'),nl,
+	write('		1 - Usar el Sistema Experto'),nl,
+	write('		2 - Ingresar Datos a la Base de Conocimiento'),nl,
 	write('		3 - Salir'),nl,
 	write('		Respuesta: '),
 	read(Respuesta),nl,
 	validacion(Respuesta).
+
+/* MENÚ */
+menu2:-
+	nl,
+	write('		1 - Iniciar el diagnostico Encadenamiento Hacia Atras'),nl,
+	write('		2 - Iniciar el diagnostico Encadenamiento Hacia Adelante'),nl,
+	write('		Respuesta: '),
+	read(Respuesta),nl,
+	validacion2(Respuesta).
 
 /* VALIDAR ARCHIVO CONOCIMIENTO */
 validarArchivo :- exists_file('enf.dbs').
@@ -29,12 +38,19 @@ validarArchivo :-
     write('		Se ha definido el archivo enf.dbs'),nl.
 
 /* VALIDAR RESPUESTA DE MENÚ */
-validacion(Respuesta):-Respuesta=1, enfermaEHA, menu.
-validacion(Respuesta):-Respuesta=2, enfermaEHD, menu.
+validacion(Respuesta):-Respuesta=1, menu2.
+validacion(Respuesta):-Respuesta=2, ingresa, menu.
 validacion(Respuesta):-Respuesta=3, salida.
 validacion(Respuesta):-Respuesta\=1,Respuesta\=2,
 	nl,
 	write('		Opción Incorrecta'),nl,menu.
+
+/* VALIDAR RESPUESTA DE MENÚ 2*/
+validacion2(Respuesta):-Respuesta=1, enfermaEHA, menu.
+validacion2(Respuesta):-Respuesta=2, enfermaEHD, menu.
+validacion2(Respuesta):-Respuesta\=1,Respuesta\=2,
+	nl,
+	write('		Opción Incorrecta'),nl,menu2.
 
 /* DESPEDIDA */
 salida:- nl, write('		Gracias, buen día!').
@@ -47,17 +63,15 @@ save(ToFile):-
 	told,
 	tell(Old).
 
-/* ENCADENAMIENTO HACIA ATRAS */
-/* CONSULTA ARCHIVO enf.dbs */
-enfermaEHA:-
+/* INDRODCIR DATOS A LA BASE DE CONOCIMIENTO */
+ingresa :-
    consult('enf.dbs'),
    fail.
 
-/* AGREGA ENFERMEDAD */
-enfermaEHA:-
+ingresa:-
 	asserta(si(end)),
 	asserta(no(end)),
-	write("		Desea introducir información? << s/n >>"),nl,
+	write("		Desea introducir una enfermedad? << s/n >>"),nl,
 	write("		Respuesta: "),
 	read(A),
 	A=s,
@@ -66,8 +80,18 @@ enfermaEHA:-
 	/* Se guarda el archivo después de que se agrega enfermedad */
 	save('enf.dbs'),!,nl.
 
+ingresa:- menu.
+
+/* ENCADENAMIENTO HACIA ATRAS */
+/* CONSULTA ARCHIVO enf.dbs */
+enfermaEHA:-
+   consult('enf.dbs'),
+   fail.
+
 /* EVALUACIÓN - ehd */
 enfermaEHA:-
+	asserta(si(end)),
+	asserta(no(end)),
 	nl,nl,
 	write("		DIÁLOGO DE DIAGNÓSTICO"),nl,nl,
 	write('		¿Qué enfermedad supones? <<minúsculas>>'),nl,nl,
@@ -89,22 +113,10 @@ enfermaEHD:-
    consult('enf.dbs'),
    fail.
 
-/* AGREGA ENFERMEDAD */
+/* EVALUACIÓN - ehd */
 enfermaEHD:-
 	asserta(si(end)),
 	asserta(no(end)),
-	write("		Desea introducir información? << s/n >>"),nl,
-	write("		Respuesta: "),
-	read(A),
-	A=s,
-	/* Si introducir regresa falso, ya no se desean agregar enfermedades. */
-	not(introducir),
-	/* Se guarda el archivo después de que se agrega enfermedad */
-	save('enf.dbs'),!,nl,
-	preguntarEHD[]).
-
-/* EVALUACIÓN - ehd */
-enfermaEHD:-
 	nl,nl,
 	write("		DIÁLOGO DE DIAGNÓSTICO"),nl,
 	write("		Responde <s/n>"),nl,
